@@ -1,75 +1,74 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="490" viewBox="0 0 1400 490" font-family="Inter, 'Segoe UI', -apple-system, Helvetica, Arial, sans-serif" role="img" aria-label="Workflow: target list, research, find the person, contact details, draft outreach, ready to review">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="660" viewBox="0 0 960 660" font-family="Inter, 'Segoe UI', -apple-system, Helvetica, Arial, sans-serif" role="img" aria-label="Workflow: target list, research, find the person, contact details, draft outreach, ready to review">
 <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8C959F"/></marker></defs>
-<rect width="1400" height="490" rx="18" fill="#FFFFFF"/>
-<text x="36" y="56" font-size="13" font-weight="700" letter-spacing="1.6" fill="#59636E">HOW IT WORKS</text>
-<text x="36" y="92" font-size="26" font-weight="700" fill="#1F2328">From a list of companies to ready-to-send outreach, in one run</text>
-<rect x="36.0" y="128" width="201.3" height="252" rx="14" fill="#FFFFFF" stroke="#D0D7DE" stroke-width="1.5" stroke-dasharray="6 5"/>
-<text x="54.0" y="168" font-size="11.5" font-weight="700" letter-spacing="1.4" fill="#57606A">INPUT</text>
-<text x="54.0" y="212" font-size="18" font-weight="700" fill="#1F2328">Target list</text>
-<text x="54.0" y="238" font-size="13.5" fill="#59636E">Companies, websites</text>
-<text x="54.0" y="258" font-size="13.5" fill="#59636E">and target location</text>
-<rect x="54.0" y="341" width="114.8" height="25" rx="12.5" fill="#EAEEF2"/>
-<text x="111.4" y="358" font-size="12.5" font-weight="600" fill="#57606A" text-anchor="middle">Google Sheets</text>
-<line x1="241.3" y1="254.0" x2="256.3" y2="254.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
-<rect x="261.3" y="128" width="201.3" height="252" rx="14" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1.5"/>
-<rect x="261.3" y="128" width="201.3" height="5" rx="2.5" fill="#0969DA"/>
-<circle cx="292.3" cy="164" r="13" fill="#0969DA"/>
-<text x="292.3" y="169" font-size="13.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
-<text x="279.3" y="212" font-size="18" font-weight="700" fill="#1F2328">Research</text>
-<text x="279.3" y="238" font-size="13.5" fill="#59636E">Reads each website and</text>
-<text x="279.3" y="258" font-size="13.5" fill="#59636E">writes a partner brief</text>
-<rect x="279.3" y="341" width="61.6" height="25" rx="12.5" fill="#DDF4FF"/>
-<text x="310.1" y="358" font-size="12.5" font-weight="600" fill="#0969DA" text-anchor="middle">Gemini</text>
-<line x1="466.7" y1="254.0" x2="481.7" y2="254.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
-<rect x="486.7" y="128" width="201.3" height="252" rx="14" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1.5"/>
-<rect x="486.7" y="128" width="201.3" height="5" rx="2.5" fill="#8250DF"/>
-<circle cx="517.7" cy="164" r="13" fill="#8250DF"/>
-<text x="517.7" y="169" font-size="13.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
-<text x="504.7" y="212" font-size="18" font-weight="700" fill="#1F2328">Find the person</text>
-<text x="504.7" y="238" font-size="13.5" fill="#59636E">Searches LinkedIn by</text>
-<text x="504.7" y="258" font-size="13.5" fill="#59636E">company, role, location;</text>
-<text x="504.7" y="278" font-size="13.5" fill="#59636E">AI picks the best fit</text>
-<rect x="504.7" y="309" width="61.6" height="25" rx="12.5" fill="#FBEFFF"/>
-<text x="535.5" y="326" font-size="12.5" font-weight="600" fill="#8250DF" text-anchor="middle">Serper</text>
-<rect x="504.7" y="341" width="61.6" height="25" rx="12.5" fill="#FBEFFF"/>
-<text x="535.5" y="358" font-size="12.5" font-weight="600" fill="#8250DF" text-anchor="middle">Gemini</text>
-<line x1="692.0" y1="254.0" x2="707.0" y2="254.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
-<rect x="712.0" y="128" width="201.3" height="252" rx="14" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1.5"/>
-<rect x="712.0" y="128" width="201.3" height="5" rx="2.5" fill="#1A7F37"/>
-<circle cx="743.0" cy="164" r="13" fill="#1A7F37"/>
-<text x="743.0" y="169" font-size="13.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
-<text x="730.0" y="212" font-size="18" font-weight="700" fill="#1F2328">Contact details</text>
-<text x="730.0" y="238" font-size="13.5" fill="#59636E">Verified work email,</text>
-<text x="730.0" y="258" font-size="13.5" fill="#59636E">phone, local office</text>
-<rect x="730.0" y="309" width="84.4" height="25" rx="12.5" fill="#DAFBE1"/>
-<text x="772.2" y="326" font-size="12.5" font-weight="600" fill="#1A7F37" text-anchor="middle">Hunter.io</text>
-<rect x="730.0" y="341" width="99.6" height="25" rx="12.5" fill="#DAFBE1"/>
-<text x="779.8" y="358" font-size="12.5" font-weight="600" fill="#1A7F37" text-anchor="middle">Serper Maps</text>
-<line x1="917.3" y1="254.0" x2="932.3" y2="254.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
-<rect x="937.3" y="128" width="201.3" height="252" rx="14" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1.5"/>
-<rect x="937.3" y="128" width="201.3" height="5" rx="2.5" fill="#BC4C00"/>
-<circle cx="968.3" cy="164" r="13" fill="#BC4C00"/>
-<text x="968.3" y="169" font-size="13.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
-<text x="955.3" y="212" font-size="18" font-weight="700" fill="#1F2328">Draft outreach</text>
-<text x="955.3" y="238" font-size="13.5" fill="#59636E">Email, LinkedIn note</text>
-<text x="955.3" y="258" font-size="13.5" fill="#59636E">and follow-up message</text>
-<rect x="955.3" y="341" width="61.6" height="25" rx="12.5" fill="#FFF1E5"/>
-<text x="986.1" y="358" font-size="12.5" font-weight="600" fill="#BC4C00" text-anchor="middle">Gemini</text>
-<line x1="1142.7" y1="254.0" x2="1157.7" y2="254.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
-<rect x="1162.7" y="128" width="201.3" height="252" rx="14" fill="#FFFFFF" stroke="#D0D7DE" stroke-width="1.5" stroke-dasharray="6 5"/>
-<text x="1180.7" y="168" font-size="11.5" font-weight="700" letter-spacing="1.4" fill="#57606A">OUTPUT</text>
-<text x="1180.7" y="212" font-size="18" font-weight="700" fill="#1F2328">Ready to review</text>
-<text x="1180.7" y="238" font-size="13.5" fill="#59636E">Briefs and Outreach</text>
-<text x="1180.7" y="258" font-size="13.5" fill="#59636E">tabs, one row each</text>
-<rect x="1180.7" y="341" width="114.8" height="25" rx="12.5" fill="#EAEEF2"/>
-<text x="1238.1" y="358" font-size="12.5" font-weight="600" fill="#57606A" text-anchor="middle">Google Sheets</text>
-<rect x="36" y="410" width="1328" height="48" rx="12" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1"/>
-<circle cx="115.9" cy="434" r="4" fill="#0969DA"/>
-<text x="202.0" y="439" font-size="14" font-weight="600" fill="#1F2328" text-anchor="middle">Orchestrated in n8n</text>
-<circle cx="428.4" cy="434" r="4" fill="#8250DF"/>
-<text x="534.0" y="439" font-size="14" font-weight="600" fill="#1F2328" text-anchor="middle">Runs on your own machine</text>
-<circle cx="795.5" cy="434" r="4" fill="#1A7F37"/>
-<text x="866.0" y="439" font-size="14" font-weight="600" fill="#1F2328" text-anchor="middle">100% free tiers</text>
-<circle cx="1143.1" cy="434" r="4" fill="#BC4C00"/>
-<text x="1198.0" y="439" font-size="14" font-weight="600" fill="#1F2328" text-anchor="middle">Open source</text>
+<rect width="960" height="660" rx="18" fill="#FFFFFF"/>
+<text x="32" y="50" font-size="14" font-weight="700" letter-spacing="1.6" fill="#59636E">HOW IT WORKS</text>
+<text x="32" y="84" font-size="25" font-weight="700" fill="#1F2328">From a list of companies to ready-to-send outreach</text>
+<rect x="32.0" y="112" width="272.0" height="196" rx="14" fill="#FFFFFF" stroke="#D0D7DE" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="52.0" y="150" font-size="13" font-weight="700" letter-spacing="1.4" fill="#57606A">INPUT</text>
+<text x="52.0" y="190" font-size="21" font-weight="700" fill="#1F2328">Target list</text>
+<text x="52.0" y="218" font-size="15.5" fill="#59636E">Companies, websites</text>
+<text x="52.0" y="240" font-size="15.5" fill="#59636E">and target location</text>
+<rect x="52.0" y="264" width="129.2" height="28" rx="14" fill="#EAEEF2"/>
+<text x="116.6" y="283" font-size="14" font-weight="600" fill="#57606A" text-anchor="middle">Google Sheets</text>
+<line x1="310.0" y1="210.0" x2="336.0" y2="210.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="344.0" y="112" width="272.0" height="196" rx="14" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1.5"/>
+<rect x="344.0" y="112" width="272.0" height="5" rx="2.5" fill="#0969DA"/>
+<circle cx="378.0" cy="145" r="14" fill="#0969DA"/>
+<text x="378.0" y="150.5" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">1</text>
+<text x="364.0" y="190" font-size="21" font-weight="700" fill="#1F2328">Research</text>
+<text x="364.0" y="218" font-size="15.5" fill="#59636E">Reads each website and</text>
+<text x="364.0" y="240" font-size="15.5" fill="#59636E">writes a partner brief</text>
+<rect x="364.0" y="264" width="70.4" height="28" rx="14" fill="#DDF4FF"/>
+<text x="399.2" y="283" font-size="14" font-weight="600" fill="#0969DA" text-anchor="middle">Gemini</text>
+<line x1="622.0" y1="210.0" x2="648.0" y2="210.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="656.0" y="112" width="272.0" height="196" rx="14" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1.5"/>
+<rect x="656.0" y="112" width="272.0" height="5" rx="2.5" fill="#8250DF"/>
+<circle cx="690.0" cy="145" r="14" fill="#8250DF"/>
+<text x="690.0" y="150.5" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">2</text>
+<text x="676.0" y="190" font-size="21" font-weight="700" fill="#1F2328">Find the person</text>
+<text x="676.0" y="218" font-size="15.5" fill="#59636E">Finds LinkedIn profiles in</text>
+<text x="676.0" y="240" font-size="15.5" fill="#59636E">that location; AI picks one</text>
+<rect x="676.0" y="264" width="70.4" height="28" rx="14" fill="#FBEFFF"/>
+<text x="711.2" y="283" font-size="14" font-weight="600" fill="#8250DF" text-anchor="middle">Serper</text>
+<rect x="754.4" y="264" width="70.4" height="28" rx="14" fill="#FBEFFF"/>
+<text x="789.6" y="283" font-size="14" font-weight="600" fill="#8250DF" text-anchor="middle">Gemini</text>
+<rect x="32.0" y="372" width="272.0" height="196" rx="14" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1.5"/>
+<rect x="32.0" y="372" width="272.0" height="5" rx="2.5" fill="#1A7F37"/>
+<circle cx="66.0" cy="405" r="14" fill="#1A7F37"/>
+<text x="66.0" y="410.5" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">3</text>
+<text x="52.0" y="450" font-size="21" font-weight="700" fill="#1F2328">Contact details</text>
+<text x="52.0" y="478" font-size="15.5" fill="#59636E">Verified work email,</text>
+<text x="52.0" y="500" font-size="15.5" fill="#59636E">phone, local office</text>
+<rect x="52.0" y="524" width="95.6" height="28" rx="14" fill="#DAFBE1"/>
+<text x="99.8" y="543" font-size="14" font-weight="600" fill="#1A7F37" text-anchor="middle">Hunter.io</text>
+<rect x="155.6" y="524" width="112.4" height="28" rx="14" fill="#DAFBE1"/>
+<text x="211.8" y="543" font-size="14" font-weight="600" fill="#1A7F37" text-anchor="middle">Serper Maps</text>
+<line x1="310.0" y1="470.0" x2="336.0" y2="470.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="344.0" y="372" width="272.0" height="196" rx="14" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1.5"/>
+<rect x="344.0" y="372" width="272.0" height="5" rx="2.5" fill="#BC4C00"/>
+<circle cx="378.0" cy="405" r="14" fill="#BC4C00"/>
+<text x="378.0" y="410.5" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">4</text>
+<text x="364.0" y="450" font-size="21" font-weight="700" fill="#1F2328">Draft outreach</text>
+<text x="364.0" y="478" font-size="15.5" fill="#59636E">Email, LinkedIn note</text>
+<text x="364.0" y="500" font-size="15.5" fill="#59636E">and follow-up message</text>
+<rect x="364.0" y="524" width="70.4" height="28" rx="14" fill="#FFF1E5"/>
+<text x="399.2" y="543" font-size="14" font-weight="600" fill="#BC4C00" text-anchor="middle">Gemini</text>
+<line x1="622.0" y1="470.0" x2="648.0" y2="470.0" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="656.0" y="372" width="272.0" height="196" rx="14" fill="#FFFFFF" stroke="#D0D7DE" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="676.0" y="410" font-size="13" font-weight="700" letter-spacing="1.4" fill="#57606A">OUTPUT</text>
+<text x="676.0" y="450" font-size="21" font-weight="700" fill="#1F2328">Ready to review</text>
+<text x="676.0" y="478" font-size="15.5" fill="#59636E">Briefs and Outreach</text>
+<text x="676.0" y="500" font-size="15.5" fill="#59636E">tabs, one row each</text>
+<rect x="676.0" y="524" width="129.2" height="28" rx="14" fill="#EAEEF2"/>
+<text x="740.6" y="543" font-size="14" font-weight="600" fill="#57606A" text-anchor="middle">Google Sheets</text>
+<path d="M792.0,314 L792.0,329.0 Q792.0,339.0 782.0,339.0 L178.0,339.0 Q168.0,339.0 168.0,349.0 L168.0,364" fill="none" stroke="#8C959F" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="32" y="596" width="896" height="48" rx="12" fill="#F6F8FA" stroke="#D0D7DE" stroke-width="1"/>
+<circle cx="57.9" cy="620" r="4" fill="#0969DA"/>
+<text x="144.0" y="625" font-size="15" font-weight="600" fill="#1F2328" text-anchor="middle">Orchestrated in n8n</text>
+<circle cx="278.0" cy="620" r="4" fill="#8250DF"/>
+<text x="368.0" y="625" font-size="15" font-weight="600" fill="#1F2328" text-anchor="middle">Runs on your machine</text>
+<circle cx="521.5" cy="620" r="4" fill="#1A7F37"/>
+<text x="592.0" y="625" font-size="15" font-weight="600" fill="#1F2328" text-anchor="middle">100% free tiers</text>
+<circle cx="761.1" cy="620" r="4" fill="#BC4C00"/>
+<text x="816.0" y="625" font-size="15" font-weight="600" fill="#1F2328" text-anchor="middle">Open source</text>
 </svg>

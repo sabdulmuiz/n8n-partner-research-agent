@@ -48,7 +48,7 @@
 
 ![Outreach tab](screenshots/outreach-sheet.png)
 
-<sub>Screenshots use demo data with fictional organisations and people. Real runs produce the same output for real organisations.</sub>
+<sub>Screenshots use demo data with fictional organisations and people, and show the key columns only. Click any image to see it full size.</sub>
 
 ---
 
@@ -66,17 +66,17 @@ Tested on **36 public organisations** (startup programmes, accelerators, VC fund
 
 ## Time saved (estimate)
 
-| Task per company (2 contacts) | Manual | With the agent |
+| Task per company (1 contact) | Manual | With the agent |
 | --- | --- | --- |
 | Research the company and write a brief | 15–25 min | ~3 min to review |
-| Find the right person in the right country | 5–10 min | ~2 min to check profiles |
-| Find and verify emails | 3–5 min | ~1 min |
+| Find the right person in the right country | 5–10 min | ~2 min to check the profile |
+| Find and verify the email | 2–3 min | ~1 min |
 | Find the local office phone | 2 min | 0 |
-| Write an email and LinkedIn messages | 15–20 min | 5–8 min to edit |
+| Write an email and LinkedIn messages | 10–15 min | 3–5 min to edit |
 | Log everything in a spreadsheet | 3–5 min | 0 |
-| **Total** | **45–65 min** | **10–15 min** |
+| **Total** | **40–60 min** | **about 10 min** |
 
-**About 75–80% less time per company.** For a list of 36 companies, that's roughly 27–39 hours of manual work reduced to 6–9 hours of review.
+**About 75–80% less time per company.** For a list of 36 companies, that's roughly 24–36 hours of manual work reduced to about 6 hours of review. Set `contacts_per_company` to 2 or more and the saving grows, since each extra contact takes 15–20 minutes by hand.
 
 ---
 
