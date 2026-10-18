@@ -1,0 +1,859 @@
+{
+  "name": "Partner Research & Outreach Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "67e715ab-9824-4cf1-bddb-2e101f7eff8b",
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// EDIT THESE before you run. Every step below reads them.\nreturn [{ json: {\n  sender_name: 'Your Name',\n  sender_role: 'Partnerships',\n  sender_company: 'Your Company',\n  company_pitch: 'Your Company is a [what you do] based in [city]. It looks for partners that bring [market access, credits, capital, customers or talent].',\n  contacts_per_company: 2,                         // people per company in the Outreach sheet\n  default_location: 'United Arab Emirates',        // used when a target's contact_location is blank\n  default_titles: 'Partnerships; Business Development; Startups; Ecosystem; Alliances',\n  hunter_enrich: true                              // true = also check each person's location/phone with Hunter (0.2 credits each)\n}}];"
+      },
+      "id": "ae239398-7008-4112-9cd6-8ea12b0e6360",
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Targets",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "36005953-1f25-485b-806d-1f287ca60f59",
+      "name": "Read Targets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        400,
+        240
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Briefs",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "439d8139-238c-4fb6-b795-23af69b05a36",
+      "name": "Read Briefs",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        600,
+        240
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Only process targets that don't have a brief yet. To redo one, delete its Briefs row.\nconst done = new Set($input.all().map(i => String(i.json.name || '').trim().toLowerCase()).filter(Boolean));\nreturn $('Read Targets').all()\n  .filter(i => String(i.json.name || '').trim() && !done.has(String(i.json.name).trim().toLowerCase()))\n  .map(i => ({ json: i.json }));"
+      },
+      "id": "9e434cc2-bb04-4092-8af2-92575c0daa64",
+      "name": "Pending Targets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "0bafa222-c32e-48d3-8d28-15bd1b768b5a",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1000,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.website || 'https://example.invalid' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "bfe46226-8633-4c5c-b72e-a954010880f0",
+      "name": "Fetch Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1220,
+        240
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Website text + the target's settings, with defaults filled in\nconst html = String($input.first().json.data || '');\nconst text = html.replace(/<script[\\s\\S]*?<\\/script>/gi, ' ').replace(/<style[\\s\\S]*?<\\/style>/gi, ' ')\n  .replace(/<[^>]+>/g, ' ').replace(/&nbsp;|&amp;/g, ' ').replace(/\\s+/g, ' ').trim().slice(0, 8000);\nconst p = $('Loop Over Items').first().json;\nconst cfg = $('Config').first().json;\nlet domain = String(p.domain || '').trim();\nif (!domain && p.website) { try { domain = new URL(p.website).hostname.replace(/^www\\./, ''); } catch (e) {} }\nreturn [{ json: {\n  name: p.name,\n  website: p.website || '',\n  domain,\n  linkedin_company: p.linkedin_company || p.name,\n  type: p.type || '',\n  contact_location: p.contact_location || cfg.default_location,\n  contact_titles: p.contact_titles || cfg.default_titles,\n  text: text || 'No website text could be fetched. Use general knowledge of this organisation.'\n}}];"
+      },
+      "id": "ee46d6de-559c-4520-abca-67318e0af76a",
+      "name": "Clean Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a partnerships analyst at {{ $('Config').first().json.sender_company }}. {{ $('Config').first().json.company_pitch }}\n\nWrite a partner brief on {{ $json.name }} ({{ $json.type }}), focusing on its presence in {{ $json.contact_location }}.\n\nReturn ONLY valid JSON, no markdown, with exactly these keys:\n\"summary\": what they do, in 2 sentences\n\"what_they_want\": what they most likely want from a partner like us\n\"what_we_get\": the concrete value for our ventures\n\"trade\": the deal that makes sense for both sides, in 1 sentence\n\"priority\": High, Medium or Low, followed by a one-line reason\n\nWebsite text:\n{{ $json.text }}"
+      },
+      "id": "9647cbd3-0c9b-4687-8267-dff1049a3883",
+      "name": "Write Partner Brief",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1640,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "id": "a43a7e28-4a09-4d23-abff-f8fabdd4cf75",
+      "name": "Gemini Model (Brief)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = String($input.first().json.text || '');\nlet b = {};\ntry { const m = raw.match(/\\{[\\s\\S]*\\}/); b = JSON.parse(m ? m[0] : raw); }\ncatch (e) { b = { summary: 'Could not parse AI output: ' + raw.slice(0, 300) }; }\nconst p = $('Clean Text').first().json;\nreturn [{ json: {\n  name: p.name, website: p.website, type: p.type, contact_location: p.contact_location,\n  summary: b.summary || '', what_they_want: b.what_they_want || '', what_we_get: b.what_we_get || '',\n  trade: b.trade || '', priority: b.priority || '', created: new Date().toISOString().slice(0, 10)\n}}];"
+      },
+      "id": "020b7552-4ee5-4708-beaa-b4e501e2dc00",
+      "name": "Parse Brief",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Briefs",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "id": "1f50254d-9ded-44f2-b2ad-d141ed7855bd",
+      "name": "Save to Briefs Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2120,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Three Google searches via Serper:\n//  1) LinkedIn profiles: company + role keywords + location\n//  2) LinkedIn profiles: company + location + broad partnership words (catches different titles)\n//  3) Google Maps: the company's office in that location (office phone)\nconst t = $('Clean Text').first().json;\nconst GL = { 'united arab emirates': 'ae', 'uae': 'ae', 'dubai': 'ae', 'abu dhabi': 'ae', 'saudi arabia': 'sa',\n  'ksa': 'sa', 'riyadh': 'sa', 'qatar': 'qa', 'doha': 'qa', 'bahrain': 'bh', 'kuwait': 'kw', 'oman': 'om',\n  'egypt': 'eg', 't\u00fcrkiye': 'tr', 'turkey': 'tr', 'istanbul': 'tr', 'united kingdom': 'gb', 'uk': 'gb',\n  'london': 'gb', 'united states': 'us', 'usa': 'us', 'pakistan': 'pk', 'netherlands': 'nl', 'germany': 'de',\n  'ireland': 'ie', 'france': 'fr', 'india': 'in', 'singapore': 'sg' };\nconst loc = String(t.contact_location).trim();\nconst gl = GL[loc.toLowerCase()] || 'us';\nconst company = String(t.linkedin_company).trim();\nconst titles = String(t.contact_titles).split(/[;|]/).map(s => s.trim()).filter(Boolean);\nconst titleOr = titles.map(x => '\"' + x + '\"').join(' OR ');\nreturn [\n  { json: { kind: 'people', endpoint: 'search', gl,\n    q: `site:linkedin.com/in \"${company}\" (${titleOr}) \"${loc}\"` } },\n  { json: { kind: 'people', endpoint: 'search', gl,\n    q: `site:linkedin.com/in \"${company}\" \"${loc}\" (partnerships OR partner OR \"business development\" OR startups OR ecosystem OR alliances)` } },\n  { json: { kind: 'office', endpoint: 'places', gl, q: `${company} office ${loc}` } }\n];"
+      },
+      "id": "75c7f9e0-57e0-4b14-a844-535153eaa32e",
+      "name": "Build Searches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://google.serper.dev/' + $json.endpoint }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 25000
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ q: $json.q, gl: $json.gl, num: 10 }) }}"
+      },
+      "id": "ca64b616-6d91-45c9-baab-3dfd01e34cb0",
+      "name": "Serper Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        700
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge LinkedIn results (deduplicated) and take the office phone from the Maps result\nconst reqs = $('Build Searches').all();\nconst t = $('Clean Text').first().json;\nconst LOCAL = {\n  ae: ['united arab emirates', 'uae', 'dubai', 'abu dhabi', 'sharjah', 'ajman', 'ras al khaimah'],\n  sa: ['saudi arabia', 'riyadh', 'jeddah', 'dammam', 'khobar'], qa: ['qatar', 'doha', 'education city'],\n  bh: ['bahrain', 'manama'], kw: ['kuwait'], om: ['oman', 'muscat'], eg: ['egypt', 'cairo'],\n  tr: ['t\u00fcrkiye', 'turkey', 'istanbul', 'ankara', 'izmir', 'i\u0307stanbul'],\n  gb: ['united kingdom', 'england', 'scotland', 'london', 'manchester', 'cheltenham'],\n  us: ['united states', 'usa', ', ny', ', ca'], pk: ['pakistan', 'karachi', 'lahore', 'islamabad'],\n  nl: ['netherlands', 'amsterdam'], de: ['germany', 'berlin', 'munich'], ie: ['ireland', 'dublin'],\n  fr: ['france', 'paris'], in: ['india'], sg: ['singapore']\n};\nconst seen = new Set();\nconst candidates = [];\nlet office = {};\n$input.all().forEach((r, i) => {\n  const kind = reqs[i] && reqs[i].json.kind;\n  const d = r.json || {};\n  if (kind === 'people') {\n    (d.organic || []).forEach(o => {\n      const link = String(o.link || '').split('?')[0];\n      if (!/linkedin\\.com\\/in\\//i.test(link) || seen.has(link)) return;\n      seen.add(link);\n      candidates.push({ n: candidates.length + 1, title: o.title || '', snippet: o.snippet || '', link });\n    });\n  } else if (kind === 'office') {\n    // Only accept an office that is actually in the target location\n    const places = d.places || [];\n    const word = String(t.linkedin_company).toLowerCase().split(' ')[0];\n    const gl = (reqs[i] && reqs[i].json.gl) || '';\n    const here = (LOCAL[gl] || []).concat(String(t.contact_location).toLowerCase());\n    const inLoc = x => here.some(n => n && String(x.address || '').toLowerCase().includes(n));\n    const p = places.find(x => inLoc(x) && String(x.title || '').toLowerCase().includes(word)) || places.find(inLoc) || {};\n    office = { office_phone: p.phoneNumber || p.phone_number || p.phone || '', office_address: p.address || '' };\n  }\n});\nconst top = candidates.slice(0, 20);\nconst handleOf = u => { const m = String(u || '').match(/linkedin\\.com\\/in\\/([^/?#]+)/i); return m ? decodeURIComponent(m[1]).toLowerCase() : ''; };\nconst links = {};\ntop.forEach(c => { const h = handleOf(c.link); if (h) links[h] = 'https://www.linkedin.com/in/' + h; });\nconst list = top.map(c => `[${c.n}] ${c.title}\\n${c.snippet}\\n${c.link}`).join('\\n\\n');\nconst gl = ($('Build Searches').first().json || {}).gl || '';\nreturn [{ json: { count: candidates.length, list: list || 'NO RESULTS', links, gl, ...office } }];"
+      },
+      "id": "895573d8-5266-4581-9a51-e80607e678d4",
+      "name": "Collect Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are screening search results to find partnership contacts.\n\nCompany: {{ $('Clean Text').first().json.linkedin_company }} (domain: {{ $('Clean Text').first().json.domain }})\nRequired location: {{ $('Clean Text').first().json.contact_location }} (any city in it counts)\nRelevant roles: {{ $('Clean Text').first().json.contact_titles }}, or similar roles that own partnerships, startups, ecosystem, alliances or business development.\n\nSearch results (LinkedIn profiles from Google):\n{{ $json.list }}\n\nPick up to {{ $('Config').first().json.contacts_per_company }} people who meet ALL of these:\n1. CURRENTLY work at this exact organisation. Reject \"ex-\", \"former\", \"previously\", a different current employer, and organisations that merely share a word in the name (e.g. \"Leap Networks\" is not \"LEAP\").\n2. Are BASED IN the required location (from the snippet or headline). Reject anyone elsewhere or with no location evidence.\n3. Hold a relevant role. Prefer the most senior relevant person.\n\nReturn ONLY a JSON array, no markdown. Each item:\n{\"first_name\": \"\", \"last_name\": \"\", \"title\": \"\", \"location\": \"\", \"linkedin_url\": \"\", \"reason\": \"one short line of evidence\"}\nReturn [] if nobody qualifies. Never invent people or URLs; copy linkedin_url exactly from the results."
+      },
+      "id": "97476437-67d8-4c44-90c7-831f55b8e97a",
+      "name": "Pick People",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1080,
+        700
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite-preview",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "24a8e7c9-5a3d-4b35-99de-23ee7de2dc2a",
+      "name": "Gemini Model (Pick)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One item per chosen person, or one 'skip' item so the loop moves on\nconst raw = String($input.first().json.text || '');\nconst t = $('Clean Text').first().json;\nconst brief = $('Parse Brief').first().json;\nconst found = $('Collect Results').first().json;\nconst cfg = $('Config').first().json;\nlet people = [];\ntry { const m = raw.replace(/```json/g, '').replace(/```/g, '').trim().match(/\\[[\\s\\S]*\\]/); people = m ? JSON.parse(m[0]) : []; }\ncatch (e) { people = []; }\n// Accept a person only if their LinkedIn URL really appeared in the Google results\nconst handleOf = u => { const m = String(u || '').match(/linkedin\\.com\\/in\\/([^/?#]+)/i); return m ? decodeURIComponent(m[1]).toLowerCase() : ''; };\nconst links = found.links || {};\npeople = people\n  .map(p => ({ ...p, _h: handleOf(p && p.linkedin_url) }))\n  .filter(p => p && p.first_name && p._h && links[p._h])\n  .map(p => ({ ...p, linkedin_url: links[p._h] }))\n  .slice(0, Number(cfg.contacts_per_company || 2));\nif (!people.length) {\n  return [{ json: { skip: true, company: t.name,\n    reason: found.count ? 'No current employee in ' + t.contact_location + ' among search results' : 'No LinkedIn results' } }];\n}\nreturn people.map(p => ({ json: {\n  skip: false,\n  company: t.name, domain: t.domain, contact_location: t.contact_location,\n  first_name: String(p.first_name).trim(), last_name: String(p.last_name || '').trim(),\n  title: p.title || '', location: p.location || '', linkedin_url: p.linkedin_url, match_reason: p.reason || '', gl: found.gl || '',\n  office_phone: found.office_phone || '', office_address: found.office_address || '',\n  summary: brief.summary, what_they_want: brief.what_they_want, trade: brief.trade\n}}));"
+      },
+      "id": "0ea75cb4-1d2f-4781-b337-60718ffa786b",
+      "name": "Parse People",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "23c85fc2-d123-4fd7-a107-5d0d00b946e0",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "def38e10-2672-4de0-bf39-00f145df507e",
+      "name": "Has Contact?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://api.hunter.io/v2/email-finder?domain=' + encodeURIComponent($json.domain || '') + '&first_name=' + encodeURIComponent($json.first_name) + '&last_name=' + encodeURIComponent($json.last_name) }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 25000
+        }
+      },
+      "id": "5d564051-4b34-487e-b443-03f9eb7f1760",
+      "name": "Find Email (Hunter)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        620
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ ($('Config').first().json.hunter_enrich && $json.data && $json.data.email) ? 'https://api.hunter.io/v2/people/find?email=' + encodeURIComponent($json.data.email) : 'https://api.hunter.io/v2/people/find?email=' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 25000
+        }
+      },
+      "id": "4505da6c-dd51-443a-8049-0083d33740b7",
+      "name": "Enrich Person (Hunter)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1960,
+        620
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combine the chosen person + Hunter Email Finder + Hunter Enrichment,\n// and check that Hunter's data describes the SAME person we picked from Google.\nconst people = $('Has Contact?').all(0);\nconst finder = $('Find Email (Hunter)').all();\nconst handleOf = u => { const m = String(u || '').match(/linkedin\\.com\\/in\\/([^/?#]+)/i); return m ? decodeURIComponent(m[1]).toLowerCase() : String(u || '').toLowerCase().replace(/\\/+$/, ''); };\n// LinkedIn sometimes appends an ID (\"nora-m-alsarhan-92a07339\"); ignore it when comparing\nconst coreOf = h => String(h || '').replace(/-[0-9a-f]{6,}$/i, '').replace(/-\\d+$/, '');\nconst ALIASES = {\n  ae: ['united arab emirates', 'uae', 'dubai', 'abu dhabi', 'sharjah', 'ajman', 'ras al khaimah'],\n  sa: ['saudi arabia', 'saudi', 'ksa', 'riyadh', 'jeddah', 'dammam', 'khobar'],\n  qa: ['qatar', 'doha'], bh: ['bahrain', 'manama'], kw: ['kuwait'], om: ['oman', 'muscat'], eg: ['egypt', 'cairo'],\n  tr: ['t\u00fcrkiye', 'turkiye', 'turkey', 'istanbul', 'ankara', 'izmir'],\n  gb: ['united kingdom', 'uk', 'england', 'scotland', 'london', 'manchester'],\n  us: ['united states', 'usa', 'u.s.'], pk: ['pakistan', 'karachi', 'lahore', 'islamabad'],\n  nl: ['netherlands', 'amsterdam'], de: ['germany', 'berlin', 'munich'], ie: ['ireland', 'dublin'], sg: ['singapore']\n};\nconst STOP = new Set(['and', 'of', 'the', 'at', 'for', 'in', '&', '-', 'manager', 'senior', 'lead']);\nconst words = t => String(t || '').toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2 && !STOP.has(w));\n\nreturn $input.all().map((r, i) => {\n  const p = (people[i] && people[i].json) || {};\n  const f = (finder[i] && finder[i].json && finder[i].json.data) || {};\n  const e = (r.json && r.json.data) || {};\n  const emp = e.employment || {};\n  const hunterLoc = e.location || [e.geo && e.geo.city, e.geo && e.geo.country].filter(Boolean).join(', ');\n  const hunterLi = f.linkedin_url || (e.linkedin && e.linkedin.handle) || '';\n  const hunterTitle = f.position || emp.title || '';\n\n  // 1. LinkedIn: same profile?\n  const gH = handleOf(p.linkedin_url), hH = hunterLi ? handleOf(hunterLi) : '';\n  const liMatch = hH ? (coreOf(gH) === coreOf(hH)) : null;\n  // 2. Location: Hunter's location inside the target location?\n  const gl = String(p.gl || '').toLowerCase();\n  const cc = String((e.geo && e.geo.countryCode) || '').toLowerCase();\n  const names = (ALIASES[gl] || []).concat(String(p.contact_location || '').toLowerCase());\n  const locMatch = hunterLoc ? ((cc && gl && cc === gl) || names.some(n => n && hunterLoc.toLowerCase().includes(n))) : null;\n  // 3. Title: do the two titles share a meaningful word?\n  const gw = new Set(words(p.title));\n  const titleMatch = hunterTitle ? words(hunterTitle).some(w => gw.has(w)) : null;\n\n  let check;\n  if (!f.email) check = 'No email found';\n  else if (liMatch === false) check = 'Check: Hunter links this email to a different LinkedIn (' + hunterLi + ')';\n  else if (locMatch === false) check = 'Check: Hunter shows ' + hunterLoc + ', not ' + p.contact_location;\n  else if (liMatch && locMatch) check = 'Verified: LinkedIn + location match';\n  else if (liMatch) check = 'Verified: LinkedIn match';\n  else if (locMatch) check = 'Likely: location matches' + (titleMatch ? ' + title' : '');\n  else if (titleMatch) check = 'Likely: title matches';\n  else if (titleMatch === false) check = 'Check: Hunter title is \"' + hunterTitle + '\"';\n  else check = 'Unverified: no Hunter data to compare';\n\n  return { json: {\n    ...p,\n    contact_name: [p.first_name, p.last_name].filter(Boolean).join(' '),\n    title: p.title || hunterTitle,\n    location: p.location || hunterLoc,\n    hunter_location: hunterLoc,\n    linkedin_url: p.linkedin_url || (hunterLi ? (hunterLi.startsWith('http') ? hunterLi : 'https://www.linkedin.com/in/' + hunterLi) : ''),\n    email: f.email || '',\n    email_status: (f.verification && f.verification.status) || (f.score ? f.score + '% confidence' : ''),\n    contact_check: check,\n    direct_phone: f.phone_number || e.phone || ''\n  }};\n});"
+      },
+      "id": "293ccdc9-5913-4156-add0-6a05e88aba3c",
+      "name": "Merge Contact",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You write partnership outreach for {{ $('Config').first().json.sender_name }} ({{ $('Config').first().json.sender_role }}, {{ $('Config').first().json.sender_company }}). {{ $('Config').first().json.company_pitch }}\n\nRecipient: {{ $json.contact_name }}, {{ $json.title }} at {{ $json.company }}, based in {{ $json.location || $json.contact_location }}.\nWhat {{ $json.company }} does: {{ $json.summary }}\nWhat they likely want: {{ $json.what_they_want }}\nProposed trade: {{ $json.trade }}\n\nWrite in plain, warm, specific English. Mention their local market where natural. No hype words, no emojis, no placeholders in square brackets. Address them by first name.\n\nReturn ONLY valid JSON, no markdown, with exactly these keys:\n\"email_subject\": under 8 words\n\"email_body\": under 120 words, ending with one clear ask for a 20-minute call, signed \"{{ $('Config').first().json.sender_name }}\"\n\"linkedin_connection_note\": under 200 characters, no links\n\"linkedin_message\": follow-up for after they accept, under 80 words"
+      },
+      "id": "488c5537-c144-4b9c-bc1e-a878e6ebf69d",
+      "name": "Write Outreach",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        2360,
+        620
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "id": "6696bbcc-a1fd-4a4c-8935-4abee616f5bd",
+      "name": "Gemini Model (Outreach)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2380,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One row per contact for the Outreach sheet\nconst contacts = $('Merge Contact').all();\nreturn $input.all().map((o, i) => {\n  const c = (contacts[i] && contacts[i].json) || {};\n  const raw = String(o.json.text || '');\n  let m = {};\n  try { const j = raw.match(/\\{[\\s\\S]*\\}/); m = JSON.parse(j ? j[0] : raw); } catch (e) { m = { email_body: raw }; }\n  return { json: {\n    company: c.company || '', contact_name: c.contact_name || '', title: c.title || '',\n    location: c.location || '', hunter_location: c.hunter_location || '', linkedin_url: c.linkedin_url || '',\n    email: c.email || '', email_status: c.email_status || '', contact_check: c.contact_check || '',\n    direct_phone: c.direct_phone || '', office_phone: c.office_phone || '', office_address: c.office_address || '',\n    email_subject: m.email_subject || '', email_body: m.email_body || '',\n    linkedin_connection_note: m.linkedin_connection_note || '', linkedin_message: m.linkedin_message || '',\n    match_reason: c.match_reason || '', status: 'Draft', created: new Date().toISOString().slice(0, 10)\n  }};\n});"
+      },
+      "id": "9205fec1-aaf9-4a0d-9407-76f2e746c21a",
+      "name": "Parse Outreach",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Outreach",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "id": "6686009f-5c8b-4047-bb62-b2750348810a",
+      "name": "Save to Outreach Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2840,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collapse to one item so the loop advances once per company\nreturn [{ json: { done: $('Parse Brief').first().json.name } }];"
+      },
+      "id": "c32e6e09-9a39-44dd-889e-8f2d4db4bff7",
+      "name": "Next Company",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3060,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "seconds"
+      },
+      "id": "313e6c0f-16a4-4563-8f41-48256e0e632f",
+      "name": "Pause (rate limit)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3260,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "width": 680,
+        "height": 330,
+        "content": "# Partner Research & Outreach Agent\n### 1. Edit **Config**: your name, company and pitch\n### 2. Sheet tabs: **Targets**, **Briefs**, **Outreach**\n### 3. Google Sheets nodes: credential + sheet URL\n### 4. Gemini nodes: your Gemini credential\n### 5. **Serper Search**: header `X-API-KEY` = Serper key\n### 6. **Hunter** nodes: header `X-API-KEY` = Hunter key\n### 7. Execute workflow"
+      },
+      "id": "07e98ae6-6ddf-4a3d-9aa2-0c476a8cbccd",
+      "name": "Setup Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -120
+      ]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Read Targets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Targets": {
+      "main": [
+        [
+          {
+            "node": "Read Briefs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Briefs": {
+      "main": [
+        [
+          {
+            "node": "Pending Targets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pending Targets": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Fetch Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Website": {
+      "main": [
+        [
+          {
+            "node": "Clean Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Text": {
+      "main": [
+        [
+          {
+            "node": "Write Partner Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Model (Brief)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Partner Brief",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Partner Brief": {
+      "main": [
+        [
+          {
+            "node": "Parse Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Brief": {
+      "main": [
+        [
+          {
+            "node": "Save to Briefs Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Briefs Sheet": {
+      "main": [
+        [
+          {
+            "node": "Build Searches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Searches": {
+      "main": [
+        [
+          {
+            "node": "Serper Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Serper Search": {
+      "main": [
+        [
+          {
+            "node": "Collect Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Results": {
+      "main": [
+        [
+          {
+            "node": "Pick People",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Model (Pick)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Pick People",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick People": {
+      "main": [
+        [
+          {
+            "node": "Parse People",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse People": {
+      "main": [
+        [
+          {
+            "node": "Has Contact?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Contact?": {
+      "main": [
+        [
+          {
+            "node": "Find Email (Hunter)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Next Company",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Email (Hunter)": {
+      "main": [
+        [
+          {
+            "node": "Enrich Person (Hunter)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Person (Hunter)": {
+      "main": [
+        [
+          {
+            "node": "Merge Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Contact": {
+      "main": [
+        [
+          {
+            "node": "Write Outreach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Model (Outreach)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Outreach",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Outreach": {
+      "main": [
+        [
+          {
+            "node": "Parse Outreach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Outreach": {
+      "main": [
+        [
+          {
+            "node": "Save to Outreach Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Outreach Sheet": {
+      "main": [
+        [
+          {
+            "node": "Next Company",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Next Company": {
+      "main": [
+        [
+          {
+            "node": "Pause (rate limit)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pause (rate limit)": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "active": false
+}
